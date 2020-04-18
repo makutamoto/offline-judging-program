@@ -12,7 +12,7 @@ import (
 func main() {
 	var result resultType
 	if len(os.Args) != 5 {
-		log.Fatal("Please specify a code, limit, tests and solutions.")
+		log.Fatal("Please specify a code, limit, tests and corrects.")
 	}
 	code := os.Args[1]
 	limit, err := strconv.Atoi(os.Args[2])
@@ -24,16 +24,16 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	solutionDir := os.Args[4]
-	solutions, err := ioutil.ReadDir(solutionDir)
+	correctDir := os.Args[4]
+	corrects, err := ioutil.ReadDir(correctDir)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("Judging '%s'...\n", code)
 	for i, test := range tests {
-		solution := solutions[i]
-		if !test.IsDir() && !solution.IsDir() {
-			res, execTime := testCode(code, limit, filepath.Join(testDir, test.Name()), filepath.Join(solutionDir, solution.Name()))
+		correct := corrects[i]
+		if !test.IsDir() && !correct.IsDir() {
+			res, execTime := testCode(code, limit, filepath.Join(testDir, test.Name()), filepath.Join(correctDir, correct.Name()))
 			result.update(res)
 			fmt.Println(res, execTime)
 		}

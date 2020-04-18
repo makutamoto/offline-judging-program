@@ -66,15 +66,14 @@ func getTime(process *os.Process) int {
 	return 1000 * (user + sys) / clockTck
 }
 
-func testCode(code string, limit int, test string, solution string) (resultType, time.Duration) {
+func testCode(code string, limit int, test string, correct string) (resultType, time.Duration) {
 	var stdout bytes.Buffer
-	var tleFlag = false
-	var waFlag = false
+	var result resultType
 	var correctScan, answerScan bool
 	testFile, err := os.Open(test)
 	if err != nil {
 		fmt.Printf("Couldn't load test case '%s': skipped.\n", test)
-		return resultAccepted, 0
+		return result, 0
 	}
 	defer testFile.Close()
 	cmd := exec.Command(code)
@@ -85,7 +84,7 @@ func testCode(code string, limit int, test string, solution string) (resultType,
 		execTime := getTime(cmd.Process)
 		if execTime > limit {
 			cmd.Process.Kill()
-			tleFlag = true
+			result.update(resultTimeLimitExceeded)
 			break
 		} else if execTime == -1 {
 			break
@@ -94,33 +93,29 @@ func testCode(code string, limit int, test string, solution string) (resultType,
 	}
 	cmd.Wait()
 	execTime := cmd.ProcessState.UserTime() + cmd.ProcessState.SystemTime()
-	if tleFlag {
-		return resultTimeLimitExceeded, execTime
+	if result == resultTimeLimitExceeded {
+		return result, execTime
 	}
 	scannerOut := bufio.NewScanner(bytes.NewReader(stdout.Bytes()))
 	scannerOut.Split(bufio.ScanWords)
-	solutionFile, err := os.Open(solution)
+	correctFile, err := os.Open(correct)
 	if err != nil {
-		fmt.Printf("Couldn't load solution '%s': skipped.\n", solution)
-		return resultAccepted, 0
+		fmt.Printf("Couldn't load correct '%s': skipped.\n", correct)
+		return result, 0
 	}
-	scannerCorrect := bufio.NewScanner(solutionFile)
+	scannerCorrect := bufio.NewScanner(correctFile)
 	for {
 		answerScan = scannerOut.Scan()
 		correctScan = scannerCorrect.Scan()
 		if !answerScan || !correctScan {
 			break
-		}
-		if !compareValue(scannerCorrect.Text(), scannerOut.Text()) {
-			waFlag = true
+		} else if !compareValue(scannerCorrect.Text(), scannerOut.Text()) {
+			result.update(resultWrongAnswer)
 			break
 		}
 	}
-	if answerScan == correctScan {
-		if waFlag {
-			return resultWrongAnswer, execTime
-		}
-		return resultAccepted, execTime
+	if answerScan != correctScan {
+		result.update(resultWrongAnswer)
 	}
-	return resultWrongAnswer, execTime
+	return result, execTime
 }
