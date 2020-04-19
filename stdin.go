@@ -19,8 +19,9 @@ type problemType struct {
 }
 
 type inputType struct {
-	Code    string      `json:"code"`
-	Problem problemType `json:"problem"`
+	Language string      `json:"language"`
+	Code     string      `json:"code"`
+	Problem  problemType `json:"problem"`
 }
 
 func parseStdin() inputType {

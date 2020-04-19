@@ -67,11 +67,11 @@ func getTime(process *os.Process) int {
 	return 1000 * (user + sys) / clockTck
 }
 
-func testCode(code string, limit int, accuracy float64, testIn string, testOut string) (resultType, time.Duration) {
+func testCode(language, code string, limit int, accuracy float64, testIn, testOut string) (resultType, time.Duration) {
 	var stdout bytes.Buffer
 	var result resultType
 	var testScan, answerScan bool
-	cmd := exec.Command("bash", "./data/run.sh", code)
+	cmd := exec.Command("bash", "./languages/"+language+"/run.sh", code)
 	cmd.Stdin = strings.NewReader(testIn)
 	cmd.Stdout = &stdout
 	if err := cmd.Start(); err != nil {

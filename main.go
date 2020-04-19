@@ -10,10 +10,10 @@ func main() {
 	var result resultType
 	info := parseStdin()
 	accuracy := math.Pow10(info.Problem.Accuracy)
-	compiled, _ := compileString(info.Code)
+	compiled, _ := compileString(info.Language, info.Code)
 	if compiled {
 		for _, test := range info.Problem.Tests {
-			res, execTime := testCode("./temp/a.out", info.Problem.Limit, accuracy, test.In, test.Out)
+			res, execTime := testCode(info.Language, "./temp/a.out", info.Problem.Limit, accuracy, test.In, test.Out)
 			result.update(res)
 			fmt.Println(res, execTime)
 		}
