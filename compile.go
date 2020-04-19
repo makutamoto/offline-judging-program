@@ -15,7 +15,7 @@ func compile(file string) (bool, string) {
 }
 
 func compileString(code string) (bool, string) {
-	file, err := os.Create("./temp/program")
+	file, err := os.Create("./temp/code")
 	if err != nil {
 		return false, "Compile System Error"
 	}
@@ -23,5 +23,5 @@ func compileString(code string) (bool, string) {
 	if _, err := file.WriteString(code); err != nil {
 		return false, "Compile System Error"
 	}
-	return compile("./temp/program")
+	return compile("./temp/code")
 }

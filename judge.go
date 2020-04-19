@@ -21,18 +21,18 @@ import "C"
 
 var clockTck = int(C.getClock())
 
-func compareValue(correct string, answer string, accuracy float64) bool {
-	integerC, err := strconv.Atoi(correct)
+func compareValue(test string, answer string, accuracy float64) bool {
+	integerC, err := strconv.Atoi(test)
 	if err == nil {
 		integerA, err := strconv.Atoi(answer)
 		return err == nil && integerC == integerA
 	}
-	numberC, err := strconv.ParseFloat(correct, 64)
+	numberC, err := strconv.ParseFloat(test, 64)
 	if err == nil {
-		numberA, err := strconv.ParseFloat(correct, 64)
+		numberA, err := strconv.ParseFloat(test, 64)
 		return err == nil && math.Abs((numberC-numberA)/numberC) <= accuracy
 	}
-	return correct == answer
+	return test == answer
 }
 
 func getTime(process *os.Process) int {
@@ -70,7 +70,7 @@ func getTime(process *os.Process) int {
 func testCode(code string, limit int, accuracy float64, testIn string, testOut string) (resultType, time.Duration) {
 	var stdout bytes.Buffer
 	var result resultType
-	var correctScan, answerScan bool
+	var testScan, answerScan bool
 	cmd := exec.Command("bash", "./data/run.sh", code)
 	cmd.Stdin = strings.NewReader(testIn)
 	cmd.Stdout = &stdout
@@ -96,19 +96,19 @@ func testCode(code string, limit int, accuracy float64, testIn string, testOut s
 	}
 	scannerOut := bufio.NewScanner(bytes.NewReader(stdout.Bytes()))
 	scannerOut.Split(bufio.ScanWords)
-	scannerCorrect := bufio.NewScanner(strings.NewReader(testOut))
-	scannerCorrect.Split(bufio.ScanWords)
+	scannerTest := bufio.NewScanner(strings.NewReader(testOut))
+	scannerTest.Split(bufio.ScanWords)
 	for {
 		answerScan = scannerOut.Scan()
-		correctScan = scannerCorrect.Scan()
-		if !answerScan || !correctScan {
+		testScan = scannerTest.Scan()
+		if !answerScan || !testScan {
 			break
-		} else if !compareValue(scannerCorrect.Text(), scannerOut.Text(), accuracy) {
+		} else if !compareValue(scannerTest.Text(), scannerOut.Text(), accuracy) {
 			result.update(resultWrongAnswer)
 			break
 		}
 	}
-	if answerScan != correctScan {
+	if answerScan != testScan {
 		result.update(resultWrongAnswer)
 	}
 	return result, execTime
