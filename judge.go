@@ -20,7 +20,7 @@ import "C"
 
 var clockTck = int(C.getClock())
 
-func compareValue(correct string, answer string) bool {
+func compareValue(correct string, answer string, accuracy float64) bool {
 	integerC, err := strconv.Atoi(correct)
 	if err == nil {
 		integerA, err := strconv.Atoi(answer)
@@ -29,7 +29,7 @@ func compareValue(correct string, answer string) bool {
 	numberC, err := strconv.ParseFloat(correct, 64)
 	if err == nil {
 		numberA, err := strconv.ParseFloat(correct, 64)
-		return err == nil && math.Abs((numberC-numberA)/numberC) < 10e-3
+		return err == nil && math.Abs((numberC-numberA)/numberC) <= accuracy
 	}
 	return correct == answer
 }
@@ -66,7 +66,7 @@ func getTime(process *os.Process) int {
 	return 1000 * (user + sys) / clockTck
 }
 
-func testCode(code string, limit int, test string, correct string) (resultType, time.Duration) {
+func testCode(code string, limit int, accuracy float64, test string, correct string) (resultType, time.Duration) {
 	var stdout bytes.Buffer
 	var result resultType
 	var correctScan, answerScan bool
@@ -109,7 +109,7 @@ func testCode(code string, limit int, test string, correct string) (resultType, 
 		correctScan = scannerCorrect.Scan()
 		if !answerScan || !correctScan {
 			break
-		} else if !compareValue(scannerCorrect.Text(), scannerOut.Text()) {
+		} else if !compareValue(scannerCorrect.Text(), scannerOut.Text(), accuracy) {
 			result.update(resultWrongAnswer)
 			break
 		}
