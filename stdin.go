@@ -7,14 +7,20 @@ import (
 	"os"
 )
 
-type testCase struct {
+type testType struct {
 	In  string `json:"in"`
 	Out string `json:"out"`
 }
 
+type problemType struct {
+	Limit    int        `json:"limit"`
+	Accuracy int        `json:"accuracy"`
+	Tests    []testType `json:"tests"`
+}
+
 type inputType struct {
-	Code  string     `json:"code"`
-	Tests []testCase `json:"tests"`
+	Code    string      `json:"code"`
+	Problem problemType `json:"problem"`
 }
 
 func parseStdin() inputType {
