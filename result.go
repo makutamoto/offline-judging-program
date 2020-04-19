@@ -5,18 +5,18 @@ type resultType int
 const (
 	resultAccepted resultType = iota
 	resultWrongAnswer
-	resultTimeLimitExceeded
 	resultReferenceError
+	resultTimeLimitExceeded
 	resultCompileError
-	resultSystemError
+	resultInternalError
 )
 
 func (result resultType) String() string {
 	switch result {
 	case resultAccepted:
 		return "AC"
-	case resultSystemError:
-		return "SE"
+	case resultInternalError:
+		return "IE"
 	case resultCompileError:
 		return "CE"
 	case resultReferenceError:
@@ -26,7 +26,7 @@ func (result resultType) String() string {
 	case resultWrongAnswer:
 		return "WA"
 	}
-	return "SE"
+	return "IE"
 }
 
 func (result *resultType) update(new resultType) {

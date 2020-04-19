@@ -75,7 +75,7 @@ func testCode(language, code string, limit int, accuracy float64, testIn, testOu
 	cmd.Stdin = strings.NewReader(testIn)
 	cmd.Stdout = &stdout
 	if err := cmd.Start(); err != nil {
-		result.update(resultSystemError)
+		result.update(resultInternalError)
 		return result, 0
 	}
 	for {
@@ -90,6 +90,9 @@ func testCode(language, code string, limit int, accuracy float64, testIn, testOu
 		time.Sleep(100 * time.Millisecond)
 	}
 	cmd.Wait()
+	if !cmd.ProcessState.Success() {
+		result.update(resultReferenceError)
+	}
 	execTime := cmd.ProcessState.UserTime() + cmd.ProcessState.SystemTime()
 	if result == resultTimeLimitExceeded {
 		return result, execTime
