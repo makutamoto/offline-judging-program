@@ -8,15 +8,15 @@ const (
 	resultTimeLimitExceeded
 	resultReferenceError
 	resultCompileError
-	resultApplicationError
+	resultSystemError
 )
 
 func (result resultType) String() string {
 	switch result {
 	case resultAccepted:
 		return "AC"
-	case resultApplicationError:
-		return "AE"
+	case resultSystemError:
+		return "SE"
 	case resultCompileError:
 		return "CE"
 	case resultReferenceError:
@@ -26,7 +26,7 @@ func (result resultType) String() string {
 	case resultWrongAnswer:
 		return "WA"
 	}
-	return "AE"
+	return "SE"
 }
 
 func (result *resultType) update(new resultType) {

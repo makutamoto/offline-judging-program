@@ -81,7 +81,7 @@ func testCode(code string, limit int, accuracy float64, test string, correct str
 	cmd.Stdout = &stdout
 	err = cmd.Start()
 	if err != nil {
-		result.update(resultApplicationError)
+		result.update(resultSystemError)
 		return result, 0
 	}
 	for {
