@@ -76,10 +76,14 @@ func testCode(code string, limit int, accuracy float64, test string, correct str
 		return result, 0
 	}
 	defer testFile.Close()
-	cmd := exec.Command(code)
+	cmd := exec.Command("bash", "./data/run.sh", code)
 	cmd.Stdin = bufio.NewReader(testFile)
 	cmd.Stdout = &stdout
-	cmd.Start()
+	err = cmd.Start()
+	if err != nil {
+		result.update(resultApplicationError)
+		return result, 0
+	}
 	for {
 		execTime := getTime(cmd.Process)
 		if execTime > limit {
