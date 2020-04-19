@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"io"
 	"os"
 	"os/exec"
 )
@@ -15,14 +14,13 @@ func compile(file string) (bool, string) {
 	return cmd.ProcessState.ExitCode() == 0, string(stderr.Bytes())
 }
 
-func compileStdin() (bool, string) {
+func compileString(code string) (bool, string) {
 	file, err := os.Create("./temp/program")
 	if err != nil {
 		return false, "Compile System Error"
 	}
 	defer file.Close()
-	_, err = io.Copy(file, os.Stdin)
-	if err != nil {
+	if _, err := file.WriteString(code); err != nil {
 		return false, "Compile System Error"
 	}
 	return compile("./temp/program")

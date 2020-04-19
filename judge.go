@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -66,21 +67,14 @@ func getTime(process *os.Process) int {
 	return 1000 * (user + sys) / clockTck
 }
 
-func testCode(code string, limit int, accuracy float64, test string, correct string) (resultType, time.Duration) {
+func testCode(code string, limit int, accuracy float64, testIn string, testOut string) (resultType, time.Duration) {
 	var stdout bytes.Buffer
 	var result resultType
 	var correctScan, answerScan bool
-	testFile, err := os.Open(test)
-	if err != nil {
-		fmt.Printf("Couldn't load test case '%s': skipped.\n", test)
-		return result, 0
-	}
-	defer testFile.Close()
 	cmd := exec.Command("bash", "./data/run.sh", code)
-	cmd.Stdin = bufio.NewReader(testFile)
+	cmd.Stdin = strings.NewReader(testIn)
 	cmd.Stdout = &stdout
-	err = cmd.Start()
-	if err != nil {
+	if err := cmd.Start(); err != nil {
 		result.update(resultSystemError)
 		return result, 0
 	}
@@ -102,12 +96,8 @@ func testCode(code string, limit int, accuracy float64, test string, correct str
 	}
 	scannerOut := bufio.NewScanner(bytes.NewReader(stdout.Bytes()))
 	scannerOut.Split(bufio.ScanWords)
-	correctFile, err := os.Open(correct)
-	if err != nil {
-		fmt.Printf("Couldn't load correct '%s': skipped.\n", correct)
-		return result, 0
-	}
-	scannerCorrect := bufio.NewScanner(correctFile)
+	scannerCorrect := bufio.NewScanner(strings.NewReader(testOut))
+	scannerCorrect.Split(bufio.ScanWords)
 	for {
 		answerScan = scannerOut.Scan()
 		correctScan = scannerCorrect.Scan()
