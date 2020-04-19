@@ -6,6 +6,7 @@ const (
 	resultAccepted resultType = iota
 	resultWrongAnswer
 	resultTimeLimitExceeded
+	resultTimedOut
 	resultReferenceError
 	resultCompileError
 	resultSystemError
@@ -23,6 +24,8 @@ func (result resultType) String() string {
 		return "RE"
 	case resultTimeLimitExceeded:
 		return "TLE"
+	case resultTimedOut:
+		return "TO"
 	case resultWrongAnswer:
 		return "WA"
 	}

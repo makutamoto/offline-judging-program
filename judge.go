@@ -35,9 +35,9 @@ func compareValue(test string, answer string, accuracy float64) bool {
 	return test == answer
 }
 
-func getTime(process *os.Process) int {
+func getTime(pid int) int {
 	var state byte
-	path := fmt.Sprintf("/proc/%d/stat", process.Pid)
+	path := fmt.Sprintf("/proc/%d/stat", pid)
 	fp, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
@@ -79,12 +79,16 @@ func testCode(language, code string, limit int, accuracy float64, testIn, testOu
 		return result, 0
 	}
 	for {
-		execTime := getTime(cmd.Process)
+		execTime := getTime(cmd.Process.Pid)
+		judgerTime := getTime(os.Getpid())
 		if execTime > limit {
 			cmd.Process.Kill()
 			result.update(resultTimeLimitExceeded)
 			break
 		} else if execTime == -1 {
+			break
+		} else if judgerTime > 10*limit {
+			result.update(resultTimedOut)
 			break
 		}
 		time.Sleep(100 * time.Millisecond)
