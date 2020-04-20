@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -74,6 +75,8 @@ func testCode(language, code string, limit int, accuracy float64, testIn, testOu
 	cmd := exec.Command("bash", "./languages/"+language+"/run.sh", code)
 	cmd.Stdin = strings.NewReader(testIn)
 	cmd.Stdout = &stdout
+	cmd.SysProcAttr = &syscall.SysProcAttr{}
+	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: childUID, Gid: childGID}
 	if err := cmd.Start(); err != nil {
 		result.update(resultInternalError)
 		return result, 0

@@ -6,6 +6,7 @@ import (
 )
 
 const tempPrefix = "/var/tmp/makutamoto-offline-judging-program-"
+const childUID, childGID = 400, 400
 
 func main() {
 	var result resultType
