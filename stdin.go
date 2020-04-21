@@ -1,8 +1,8 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"os"
 )
@@ -26,9 +26,10 @@ type inputType struct {
 
 func parseStdin() inputType {
 	var input inputType
-	bytes, err := ioutil.ReadAll(os.Stdin)
-	if err != nil {
-		log.Fatal(err)
+	scanner := bufio.NewScanner(os.Stdin)
+	bytes := make([]byte, 0)
+	for scanner.Scan() && scanner.Text() != "" {
+		bytes = append(bytes, scanner.Bytes()...)
 	}
 	if err := json.Unmarshal(bytes, &input); err != nil {
 		log.Fatal(err)
