@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -22,4 +23,5 @@ func main() {
 		result.update(resultCompileError)
 		sendStatus(result, result, 0, 0, 0, compilerOutput)
 	}
+	fmt.Println()
 }
