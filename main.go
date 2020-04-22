@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -13,16 +12,14 @@ func main() {
 	info := parseStdin()
 	accuracy := math.Pow10(info.Problem.Accuracy)
 	compiled, compilerOutput := compileString(info.Language, info.Code)
-	fmt.Println(len(info.Problem.Tests))
 	if compiled {
-		for _, test := range info.Problem.Tests {
+		for i, test := range info.Problem.Tests {
 			res, execTime := testCode(info.Language, tempPrefix+"a.out", info.Problem.Limit, accuracy, test.In, test.Out)
 			result.update(res)
-			fmt.Println(res, execTime.Milliseconds())
+			sendStatus(result, res, execTime.Milliseconds(), i+1, len(info.Problem.Tests), "")
 		}
 	} else {
 		result.update(resultCompileError)
+		sendStatus(result, result, 0, 0, 0, compilerOutput)
 	}
-	fmt.Println(result)
-	fmt.Println(compilerOutput)
 }
