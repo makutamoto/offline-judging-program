@@ -15,13 +15,13 @@ func main() {
 	compiled, compilerOutput := compileString(info.Language, info.Code)
 	if compiled {
 		for i, test := range info.Problem.Tests {
-			res, execTime := testCode(info.Language, tempPrefix+"a.out", info.Problem.Limit, accuracy, test.In, test.Out)
+			res, execTime, memory := testCode(info.Language, tempPrefix+"a.out", info.Problem.Limit, accuracy, test.In, test.Out)
 			result.update(res)
-			sendStatus(result, res, execTime.Milliseconds(), i+1, len(info.Problem.Tests), "")
+			sendStatus(result, res, execTime.Milliseconds(), memory, i+1, len(info.Problem.Tests), "")
 		}
 	} else {
 		result.update(resultCompileError)
-		sendStatus(result, result, 0, 0, 0, compilerOutput)
+		sendStatus(result, result, 0, 0, 0, 0, compilerOutput)
 	}
 	fmt.Println()
 }

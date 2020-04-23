@@ -68,7 +68,7 @@ func getTime(process *os.Process) int {
 	return 1000 * (user + sys) / clockTck
 }
 
-func testCode(language, code string, limit int, accuracy float64, testIn, testOut string) (resultType, time.Duration) {
+func testCode(language, code string, limit int, accuracy float64, testIn, testOut string) (resultType, time.Duration, int64) {
 	var stdout bytes.Buffer
 	var result resultType
 	var testScan, answerScan bool
@@ -79,7 +79,7 @@ func testCode(language, code string, limit int, accuracy float64, testIn, testOu
 	cmd.SysProcAttr.Credential = &syscall.Credential{Uid: childUID, Gid: childGID}
 	if err := cmd.Start(); err != nil {
 		result.update(resultInternalError)
-		return result, 0
+		return result, 0, 0
 	}
 	for {
 		execTime := getTime(cmd.Process)
@@ -97,8 +97,9 @@ func testCode(language, code string, limit int, accuracy float64, testIn, testOu
 		result.update(resultReferenceError)
 	}
 	execTime := cmd.ProcessState.UserTime() + cmd.ProcessState.SystemTime()
+	memory := cmd.ProcessState.SysUsage().(*syscall.Rusage).Maxrss
 	if result == resultTimeLimitExceeded {
-		return result, execTime
+		return result, execTime, memory
 	}
 	scannerOut := bufio.NewScanner(bytes.NewReader(stdout.Bytes()))
 	scannerOut.Split(bufio.ScanWords)
@@ -117,5 +118,5 @@ func testCode(language, code string, limit int, accuracy float64, testIn, testOu
 	if answerScan != testScan {
 		result.update(resultWrongAnswer)
 	}
-	return result, execTime
+	return result, execTime, memory
 }

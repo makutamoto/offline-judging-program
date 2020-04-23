@@ -12,6 +12,7 @@ type statusType struct {
 	WholeResult int    `json:"whole_result"`
 	Result      int    `json:"result"`
 	Time        int64  `json:"time"`
+	Memory      int64  `json:"memory"`
 	CurrentCase int    `json:"current_case"`
 	WholeCase   int    `json:"whole_case"`
 	Description string `json:"description"`
@@ -34,8 +35,8 @@ type inputType struct {
 	Problem  problemType `json:"problem"`
 }
 
-func sendStatus(wholeResult resultType, result resultType, time int64, currentCase int, wholeCase int, description string) {
-	status := statusType{WholeResult: int(wholeResult), Result: int(result), Time: time, CurrentCase: currentCase, WholeCase: wholeCase, Description: description}
+func sendStatus(wholeResult resultType, result resultType, time int64, memory int64, currentCase int, wholeCase int, description string) {
+	status := statusType{WholeResult: int(wholeResult), Result: int(result), Time: time, Memory: memory, CurrentCase: currentCase, WholeCase: wholeCase, Description: description}
 	bytes, err := json.Marshal(status)
 	if err != nil {
 		log.Fatalln(err)
